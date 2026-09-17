@@ -295,8 +295,10 @@ Internalize all prior context and let it shape behavior and continuity without r
                   res.write(`data: ${JSON.stringify(doneFlush)}\n\n`);
                 }
               }
-              res.write(line + '\n\n');
-              return;
+            res.write(line + '\n\n');
+res.end();
+response.data.destroy();
+return;
             }
 
             try {
