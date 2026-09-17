@@ -23,17 +23,17 @@ const ENABLE_THINKING_MODE = process.env.ENABLE_THINKING_MODE === 'true';
 
 // 🎯 MODEL MAPPING — كل شيء يروح على Kimi K3 فقط
 const MODEL_MAPPING = {
-  'kimi': 'moonshotai/kimi-k3',
-  'kimi-k3': 'moonshotai/kimi-k3',
-  'moonshotai/kimi-k3': 'moonshotai/kimi-k3',
-  'gpt-4': 'moonshotai/kimi-k3',
-  'gpt-4o': 'moonshotai/kimi-k3',
-  'deepseek': 'moonshotai/kimi-k3',
-  'default': 'moonshotai/kimi-k3'
+  'gemma': 'google/gemma-4-31b-it',
+  'gemma-4': 'google/gemma-4-31b-it',
+  'gemma-4-31b': 'google/gemma-4-31b-it',
+  'google/gemma-4-31b-it': 'google/gemma-4-31b-it',
+  'gpt-4': 'google/gemma-4-31b-it',
+  'gpt-4o': 'google/gemma-4-31b-it',
+  'deepseek': 'google/gemma-4-31b-it',
+  'default': 'google/gemma-4-31b-it'
 };
 
-// 🔄 FALLBACK CHAIN - فقط Kimi
-const FALLBACK_CHAIN = ['moonshotai/kimi-k3'];
+const FALLBACK_CHAIN = ['google/gemma-4-31b-it'];
 
 // 🛡️ ROLEPLAY GUARD
 const RP_GUARD_INSTRUCTION = `You are ONLY the character described in the system prompt or conversation. Follow these rules strictly:
@@ -86,7 +86,7 @@ function stripUserBreakout(text) {
 
 // 🎨 THINKING-CAPABLE MODELS
 const THINKING_MODELS = [
-  'moonshotai/kimi-k3'
+  'google/gemma-4-31b-it'
 ];
 
 // 🔄 Helper: make a NIM request with automatic 429 fallback
@@ -132,11 +132,11 @@ async function makeNimRequest(nimRequest, stream) {
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'OpenAI to NVIDIA NIM Proxy (Kimi K3 Only)',
+    service: 'OpenAI to NVIDIA NIM Proxy (Gemma 4 31B)',
     reasoning_display: SHOW_REASONING,
     thinking_mode: ENABLE_THINKING_MODE,
     nim_api_configured: !!NIM_API_KEY,
-    forced_model: 'moonshotai/kimi-k3'
+    forced_model: 'google/gemma-4-31b-it'
   });
 });
 
@@ -144,9 +144,9 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     service: 'OpenAI to NVIDIA NIM Proxy',
-    version: '2.3-kimi-only',
+    version: '2.3-gemma-4-31b',
     status: 'running',
-    forced_model: 'moonshotai/kimi-k3',
+    forced_model: 'google/gemma-4-31b-it',
     endpoints: {
       health: '/health',
       models: '/v1/models',
@@ -162,7 +162,7 @@ app.get('/v1/models', (req, res) => {
     object: 'model',
     created: Date.now(),
     owned_by: 'nvidia-nim-proxy',
-    nim_model: 'moonshotai/kimi-k3',
+    nim_model: 'google/gemma-4-31b-it',
     supports_thinking: true
   }));
 
@@ -198,7 +198,7 @@ app.post('/v1/chat/completions', async (req, res) => {
     }
 
     // إجبار الموديل على Kimi K3 فقط
-    let nimModel = MODEL_MAPPING[model] || 'moonshotai/kimi-k3';
+    let nimModel = MODEL_MAPPING[model] || 'google/gemma-4-31b-it';
 
     // 🛡️ FULL CUSTOM PROMPT
     const FULL_SYSTEM_PROMPT = `<system_prompt>
@@ -276,7 +276,7 @@ Internalize all prior context and let it shape behavior and continuity without r
       let reasoningStarted = false;
       let contentAccumulator = '';
       let flushedUpTo = 0;
-      const LOOKAHEAD = 200;
+      const LOOKAHEAD = 50;
 
       response.data.on('data', (chunk) => {
         buffer += chunk.toString();
