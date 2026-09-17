@@ -276,7 +276,7 @@ Internalize all prior context and let it shape behavior and continuity without r
       let reasoningStarted = false;
       let contentAccumulator = '';
       let flushedUpTo = 0;
-      const LOOKAHEAD = 50;
+      const LOOKAHEAD = 10;
 
       response.data.on('data', (chunk) => {
         buffer += chunk.toString();
